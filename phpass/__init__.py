@@ -65,17 +65,17 @@ class PasswordHash:
         outp = ''
         cur = 0
         while cur < count:
-            value = ord(inp[cur])
+            value = inp[cur]
             cur += 1
             outp += self.itoa64[value & 0x3f]
             if cur < count:
-                value |= (ord(inp[cur]) << 8)
+                value |= (inp[cur] << 8)
             outp += self.itoa64[(value >> 6) & 0x3f]
             if cur >= count:
                 break
             cur += 1
             if cur < count:
-                value |= (ord(inp[cur]) << 16)
+                value |= (inp[cur] << 16)
             outp += self.itoa64[(value >> 12) & 0x3f]
             if cur >= count:
                 break
@@ -104,9 +104,9 @@ class PasswordHash:
             return outp
         if not isinstance(pw, str):
             pw = pw.encode('utf-8')
-        hx = hashlib.md5(salt + pw).digest()
+        hx = hashlib.md5((salt + pw).encode()).digest()
         while count:
-            hx = hashlib.md5(hx + pw).digest()
+            hx = hashlib.md5(hx + pw.encode()).digest()
             count -= 1
         return setting[:12] + self.encode64(hx, 16)
     
@@ -200,7 +200,7 @@ if __name__ == "__main__":
         pw2 = getpass.getpass('Retype password: ')
         if pw == pw2:
             break
-        print "Both passwords must be the same"
+        print("Both passwords must be the same")
     t_hasher = PasswordHash(8, True)
-    print "Password hash: " + t_hasher.hash_password(pw)
+    print("Password hash: " + t_hasher.hash_password(pw))
 
